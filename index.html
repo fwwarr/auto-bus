@@ -1,0 +1,109 @@
+<!doctype html>
+<html ng-app="AutoBus">
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+	<script type="text/javascript" src="https://code.angularjs.org/1.3.13/angular-resource.min.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="lib/ui-bootstrap-tpls-0.12.1.min.js"></script>
+	<script type="text/javascript" src="lib/moment-with-locales.min.js"></script>
+	<script type="text/javascript" src="lib/angular-translate.min.js"></script>
+	<script type="text/javascript" src="app/auto-bus.js"></script>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="container-fluid" ng-controller="AutobusController" style="margin-top:15px">
+		<div class="list-group-item active">
+		<span class="pull-right">
+		<button class="btn btn-default" data-toggle="modal" data-target="#settingsModal">
+			<i class="glyphicon glyphicon-cog"></i>
+		</button>
+		<button class="btn btn-default" data-toggle="modal" data-target="#addStopModal">
+			<i class="glyphicon glyphicon-plus"></i>
+		</button>
+		</span>
+		<h4>Auto-Bus</h4>
+		</div>
+		<div class="list-group-item" ng-repeat="s in stops">
+			<button class="btn btn-default" ng-click="removeStop($index)" style="float:right;">
+				<i class="glyphicon glyphicon-remove"></i>
+			</button>
+			<h4>{{s.result.line.public_identifier}} {{s.result.line.description}} {{s.result.line.direction_name}}
+			<span class="small">{{s.result.stopName}}</span></h4>
+			<span ng-repeat="t in s.result.result"><time time="{{t.time}}"></time> </span>
+		</div>
+	
+	<div class="modal fade" id="addStopModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel" translate>ADD_STOP</h4>
+      </div>
+      <div class="modal-body form-horizontal">
+        <div class="form-group">
+			<label for="inputLine" class="col-sm-2 control-label" translate>LINE</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="inputLine" placeholder="Line" ng-model="newStop.line">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputPassword3" class="col-sm-2 control-label" translate>STOP</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="inputStop" placeholder="Stop Number" ng-model="newStop.stop">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputPassword3" class="col-sm-2 control-label" translate>DIRECTION</label>
+			<div class="col-sm-10">
+				<div class="btn-group">
+				  <label class="btn btn-default" btn-radio="'N'" ng-model="newStop.direction" translate>NORTH</label>
+				  <label class="btn btn-default" btn-radio="'S'" ng-model="newStop.direction" translate>SOUTH</label>
+				  <label class="btn btn-default" btn-radio="'E'" ng-model="newStop.direction" translate>EAST</label>
+				  <label class="btn btn-default" btn-radio="'W'" ng-model="newStop.direction" translate>WEST</label>
+				</div>
+			</div>
+		</div>
+		
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" translate>CANCEL</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addStop()" translate>ADD</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel" translate>SETTINGS</h4>
+      </div>
+      <div class="modal-body form-horizontal">
+        <div class="form-group">
+			<label for="inputLanguage" class="col-sm-2 control-label" translate>LANGUAGE</label>
+			<div class="col-sm-10">
+				<div class="btn-group">
+				  <label class="btn btn-default" btn-radio="'en'" ng-model="settings.lang">English</label>
+				  <label class="btn btn-default" btn-radio="'fr'" ng-model="settings.lang">Français</label>
+				</div>
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" translate>OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+	
+	</div>
+	</div>
+</body>
+</html>
