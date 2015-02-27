@@ -16,8 +16,7 @@ angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate
 			}
 		},
 		stops: [
-			{line:24, stop:52741, direction:'W'},
-			{line:80, stop:52442, direction:'N'}
+			{line:80, stop:51673, direction:'S'}
 		]
 	});
 	moment.locale($scope.$storage.settings.lang);
