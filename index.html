@@ -7,6 +7,7 @@
 	<script type="text/javascript" src="lib/ui-bootstrap-tpls-0.12.1.min.js"></script>
 	<script type="text/javascript" src="lib/moment-with-locales.min.js"></script>
 	<script type="text/javascript" src="lib/angular-translate.min.js"></script>
+	<script type="text/javascript" src="lib/ngStorage.min.js"></script>
 	<script type="text/javascript" src="app/auto-bus.js"></script>
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
@@ -26,7 +27,7 @@
 		</span>
 		<h4>Auto-Bus</h4>
 		</div>
-		<div class="list-group-item" ng-repeat="s in stops">
+		<div class="list-group-item" ng-repeat="s in $storage.stops">
 			<button class="btn btn-default" ng-click="removeStop($index)" style="float:right;">
 				<i class="glyphicon glyphicon-remove"></i>
 			</button>
@@ -90,8 +91,8 @@
 			<label for="inputLanguage" class="col-sm-2 control-label" translate>LANGUAGE</label>
 			<div class="col-sm-10">
 				<div class="btn-group">
-				  <label class="btn btn-default" btn-radio="'en'" ng-model="settings.lang">English</label>
-				  <label class="btn btn-default" btn-radio="'fr'" ng-model="settings.lang">Français</label>
+				  <label class="btn btn-default" btn-radio="'en'" ng-model="$storage.settings.lang">English</label>
+				  <label class="btn btn-default" btn-radio="'fr'" ng-model="$storage.settings.lang">Français</label>
 				</div>
 			</div>
 		</div>

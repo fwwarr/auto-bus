@@ -1,39 +1,38 @@
-angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate'])
+angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate', 'ngStorage'])
 
-.controller('AutobusController', function($scope, $resource, $translate) {
+.controller('AutobusController', function($scope, $resource, $translate, $localStorage) {
 	
-	$scope.settings = {
-		lang:'fr',
-		timeFormat: {
-			absolute: {
-				show: true,
-				format: 'HH:mm'
-			},
-			relative: {
-				show: true
+	$scope.$storage = $localStorage.$default({
+		settings: {
+			lang:'fr',
+			timeFormat: {
+				absolute: {
+					show: true,
+					format: 'HH:mm'
+				},
+				relative: {
+					show: true
+				}
 			}
-		}
-	};
-	moment.locale($scope.settings.lang);
-	
-	$scope.stops = [
-		{line:24, stop:52741, direction:'W'}
-		,{line:80, stop:52442, direction:'N'}
-	];
-	window.localStorage.setItem('stops', JSON.stringify($scope.stops));
+		},
+		stops: [
+			{line:24, stop:52741, direction:'W'},
+			{line:80, stop:52442, direction:'N'}
+		]
+	});
+	moment.locale($scope.$storage.settings.lang);
 	
 	$scope.refresh = function() {
-		$scope.stops = JSON.parse(window.localStorage.getItem('stops'));
-		for (var s in $scope.stops) {
-			$scope.stops[s].result = $resource(
+		for (var s in $scope.$storage.stops) {
+			$scope.$storage.stops[s].result = $resource(
 				'http://i-www.stm.info/:lang/lines/:line/stops/:stop/arrivals',
 				{
-					lang:$scope.settings.lang,
-					line:$scope.stops[s].line,
-					stop:$scope.stops[s].stop,
+					lang:$scope.$storage.settings.lang,
+					line:$scope.$storage.stops[s].line,
+					stop:$scope.$storage.stops[s].stop,
 					d:moment().format('YYYYMMDD'),
 					t:moment().format('HHmm'),
-					direction:$scope.stops[s].direction,
+					direction:$scope.$storage.stops[s].direction,
 					wheelchair:0,
 					limit:5,
 					callback:'JSON_CALLBACK'
@@ -44,22 +43,21 @@ angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate
 	}
 	
 	$scope.addStop = function() {
-		$scope.stops.push({
+		$scope.$storage.stops.push({
 			line:$scope.newStop.line,
 			stop:$scope.newStop.stop,
 			direction:$scope.newStop.direction});
-		window.localStorage.setItem('stops', JSON.stringify($scope.stops));
 		$scope.refresh();
 	}
 	
 	$scope.removeStop = function(i) {
-		$scope.stops.splice(i,1);
+		$scope.$storage.stops.splice(i,1);
 	}
 	
 	$scope.refresh();
 	
 	$scope.$watch(
-		function(scope) { return scope.settings.lang },
+		function(scope) { return scope.$storage.settings.lang },
 		function(newValue, oldValue) {
 			$translate.use(newValue);
 			moment.locale(newValue);
@@ -75,10 +73,10 @@ angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate
 		function updateTime() {
 			var formattedTime = '';
 			
-			if(scope.settings.timeFormat.absolute.show) {
-				formattedTime += moment(attrs.time, 'HHmm').format(scope.settings.timeFormat.absolute.format);
+			if(scope.$storage.settings.timeFormat.absolute.show) {
+				formattedTime += moment(attrs.time, 'HHmm').format(scope.$storage.settings.timeFormat.absolute.format);
 			};
-			if(scope.settings.timeFormat.relative.show) {
+			if(scope.$storage.settings.timeFormat.relative.show) {
 				formattedTime += ' (' + moment(attrs.time, 'HHmm').fromNow() + ')';
 			};
 			
