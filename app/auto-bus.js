@@ -43,9 +43,9 @@ angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate
 	
 	$scope.addStop = function() {
 		$scope.$storage.stops.push({
-			line:$scope.newStop.line,
+			line:$scope.newStop.line.public_identifier,
 			stop:$scope.newStop.stop,
-			direction:$scope.newStop.direction});
+			direction:$scope.newStop.line.direction.substring(0,1)});
 		$scope.refresh();
 	}
 	
@@ -55,13 +55,47 @@ angular.module('AutoBus', ['ngResource', 'ui.bootstrap', 'pascalprecht.translate
 	
 	$scope.refresh();
 	
-	$scope.$watch(
-		function(scope) { return scope.$storage.settings.lang },
-		function(newValue, oldValue) {
-			$translate.use(newValue);
-			moment.locale(newValue);
+	$scope.updateLang = function() {
+			$translate.use($scope.$storage.settings.lang);
+			moment.locale($scope.$storage.settings.lang);
 			$scope.refresh();
-	});
+	};
+	
+	$scope.lineSearch = function(query) {
+		return $resource(
+			'http://i-www.stm.info/:lang/lines/search',
+			{
+				q: query,
+				lang:$scope.$storage.settings.lang,
+				callback:'JSON_CALLBACK'
+			},
+			{get:{method:'JSONP',isArray:true}}
+		).get().$promise.then(function(data) {
+			for (var r in data) {
+				if (data[r].type == 'AutocompleteLines') {
+					return data[r].result.map(function(line) {
+						line.formatted = line.public_identifier + ' ' + line.description + ' ' + line.direction_name;
+						return line;
+					});
+				}
+			}
+		});
+	}
+	
+	$scope.lineSelect = function() {
+		$scope.lineStops = $resource(
+				'http://i-www.stm.info/:lang/lines/:line/stops',
+				{
+					lang:$scope.$storage.settings.lang,
+					line:$scope.newStop.line.public_identifier,
+					direction:$scope.newStop.line.direction.substring(0,1),
+					withconnection:0,
+					callback:'JSON_CALLBACK'
+				},
+				{get:{method:'JSONP'}}
+			).get();
+	}
+	
 })
 
 .directive('time', ['$interval', function($interval) {
